@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import {
-  View, Text, Button, FlatList, StyleSheet, TouchableOpacity, Alert
+  View, Text, Button, FlatList, StyleSheet, TouchableOpacity
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { useFocusEffect } from '@react-navigation/native';
@@ -59,9 +59,11 @@ export default function HomeScreen({ navigation }) {
   };
 
   const renderItem = ({ item }) => (
-    <Swipeable renderRightActions={() => <RightActions id={item.id} />}>
+    <Swipeable
+      renderRightActions={() => <RightActions id={item.id} />}
+    >
       <TouchableOpacity
-        style={[styles.item, { backgroundColor: item.completed ? '#a6e5d8' : '#fff' }]}
+        style={styles.item}
         onPress={() => handleMarkTodo(item.id)}
       >
         <Text style={styles.title}>{item.text}</Text>
@@ -71,13 +73,23 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Button title="ADD A NEW TODO" color="#0000FF" onPress={() => navigation.navigate('AddTodo')} />
+      <Button title="Add a new Todo" onPress={() => navigation.navigate('AddTodo')} />
+
+      <Text style={styles.sectionHeader}>Pending</Text>
       <FlatList
-        data={todos}
+        data={todos.filter(todo => !todo.completed)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       />
-      <Button title="REMOVE TODOS" color="#FF0000" onPress={handleDeleteTodos} />
+
+      <Text style={styles.sectionHeader}>Completed</Text>
+      <FlatList
+        data={todos.filter(todo => todo.completed)}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+      />
+
+      <Button title="Remove All Todos" onPress={handleDeleteTodos} />
     </View>
   );
 }
@@ -105,5 +117,11 @@ const styles = StyleSheet.create({
   },
   actionText: {
     color: '#fff',
+  },
+  sectionHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginLeft: 16,
+    marginTop: 10,
   },
 });
